@@ -1,28 +1,12 @@
 from rest_framework import serializers
 
+from tea_django.serializers.colored import (
+    ColoredCreateSerializer,
+    ColoredUpdateSerializer,
+)
+
 from traktor.engine import engine
 from traktor.models import Project, Task, Entry
-from traktor_server.serializers.validators import color_validator
-
-# Colored
-
-
-class ColoredCreateSerializer(serializers.Serializer):
-    color = serializers.CharField(max_length=7, validators=[color_validator])
-
-
-class ColoredUpdateSerializer(serializers.Serializer):
-    color = serializers.CharField(
-        max_length=7,
-        validators=[color_validator],
-        required=False,
-        allow_null=True,
-    )
-
-    def update(self, instance, validated_data):
-        color = validated_data.get("color", None)
-        if color is not None:
-            instance.color = color
 
 
 # Project
