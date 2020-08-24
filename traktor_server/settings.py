@@ -138,7 +138,11 @@ LOGGING = log.create_logging_configuration(
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = (
+    "/static/"
+    if config.url_prefix is None
+    else f"/{config.url_prefix}/static/"
+)
 
 # Rest Framework
 REST_FRAMEWORK = {
