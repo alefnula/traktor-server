@@ -70,8 +70,11 @@ def gunicorn():
             return self.application
 
     options = {
-        "bind": f"0.0.0.0:{config.server_port}",
+        "bind": f"unix:{config.server_socket}",
         "workers": config.server_workers,
+        "disable_redirect_access_to_syslog": True,
+        "error_logfile": f"{config.log_dir}/gunicorn.log",
+        "log_leve": "error",
     }
     TraktorApplication(wsgi.application, **options).run()
 
