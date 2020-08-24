@@ -14,7 +14,11 @@ urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
     # api v0
     path("api/v0/", include("traktor_server.views.api.v0.urls"),),
-] + staticfiles_urlpatterns()
+]
 
-if config.url_prefix is not None:
-    urlpatterns = [path(f"{config.url_prefix}/", include(urlpatterns))]
+if config.url_prefix is None:
+    urlpatterns += staticfiles_urlpatterns()
+else:
+    urlpatterns = [
+        path(f"{config.url_prefix}/", include(urlpatterns))
+    ] + staticfiles_urlpatterns()
