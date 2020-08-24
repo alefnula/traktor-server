@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "django_tea",
+    "tea_django",
     "traktor",
     "traktor_server",
 ]
@@ -138,7 +138,11 @@ LOGGING = log.create_logging_configuration(
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = (
+    "/static/"
+    if config.url_prefix is None
+    else f"/{config.url_prefix}/static/"
+)
 
 # Rest Framework
 REST_FRAMEWORK = {
@@ -162,11 +166,11 @@ REST_FRAMEWORK = {
 }
 
 JWT_AUTH = {
-    # "JWT_SECRET_KEY": SECRET_KEY,
-    # "JWT_ALGORITHM": "HS256",
-    # "JWT_VERIFY": True,
-    # "JWT_VERIFY_EXPIRATION": True,
+    "JWT_SECRET_KEY": SECRET_KEY,
+    "JWT_ALGORITHM": "HS256",
+    "JWT_VERIFY": True,
+    "JWT_VERIFY_EXPIRATION": True,
     "JWT_EXPIRATION_DELTA": timedelta(days=7),
-    # "JWT_ALLOW_REFRESH": True,
+    "JWT_ALLOW_REFRESH": True,
     "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=30),
 }

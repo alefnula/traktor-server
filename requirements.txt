@@ -1,8 +1,7 @@
-console_tea==0.0.2
 django==3.1
-django-tea==0.0.4
 djangorestframework==3.11.1
 djangorestframework-jwt==1.11.0
 gunicorn==20.0.4
-traktor==0.0.3
-
+tea-console==0.0.3
+tea-django==0.0.5
+traktor==0.0.4

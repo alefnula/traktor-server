@@ -9,7 +9,7 @@ from rest_framework.exceptions import (
     ValidationError,
 )
 
-from django_tea import errors as tea_errors
+from tea_django import errors as tea_errors
 
 from traktor import errors
 
@@ -44,9 +44,6 @@ def format_rest_framework_validation_errors(errors):
 
 
 def traktor_exception_handler(exc, context):
-    from tea.utils import get_exception
-
-    print(get_exception())
     if isinstance(exc, (NotAuthenticated, AuthenticationFailed)):
         data = {"error": str(exc)}
         status = http_statuses.HTTP_401_UNAUTHORIZED

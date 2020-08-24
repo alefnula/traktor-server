@@ -1,7 +1,7 @@
 import typer
 from pathlib import Path
 
-from console_tea.commands.config import app as config_app
+from tea_console.commands.config import app as config_app
 
 from traktor_server.config import config
 
@@ -28,8 +28,6 @@ def callback(
 ):
     if config_path is not None:
         config.config_path = config_path
-
-    config.load()
 
 
 @app.command()
@@ -70,8 +68,11 @@ def gunicorn():
             return self.application
 
     options = {
-        "bind": f"0.0.0.0:{config.server_port}",
+        "bind": f"unix:{config.server_socket}",
         "workers": config.server_workers,
+        "disable_redirect_access_to_syslog": True,
+        "error_logfile": f"{config.log_dir}/gunicorn.log",
+        "log_leve": "error",
     }
     TraktorApplication(wsgi.application, **options).run()
 
