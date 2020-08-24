@@ -1,4 +1,2 @@
 gunicorn==20.0.4
-tea-console==0.0.4
-tea-django==0.0.6
-traktor==0.0.5
+traktor==0.0.6
