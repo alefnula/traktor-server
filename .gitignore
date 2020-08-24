@@ -10,6 +10,10 @@ __pycache__/
 logs/
 !logs/.keep
 
+# Staticfiles
+static/
+!static/.keep
+
 # Build artifacts
 traktor_server.egg-info
 build/

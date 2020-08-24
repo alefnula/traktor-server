@@ -144,6 +144,9 @@ STATIC_URL = (
     else f"/{config.url_prefix}/static/"
 )
 
+STATIC_ROOT = BASE_DIR / "static"
+
+
 # Rest Framework
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
