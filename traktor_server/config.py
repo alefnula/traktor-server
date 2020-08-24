@@ -21,6 +21,7 @@ class Config(TraktorConfig):
         # Path to the configuration file
         self.config_dir = (Path("~").expanduser() / ".traktor").absolute()
 
+        # Server
         self.server_host = "127.0.0.1"
         self.server_port = 8080
         self.server_url_prefix = None

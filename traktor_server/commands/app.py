@@ -29,8 +29,6 @@ def callback(
     if config_path is not None:
         config.config_path = config_path
 
-    config.load()
-
 
 @app.command()
 def runserver():

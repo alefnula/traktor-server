@@ -13,7 +13,7 @@ urlpatterns = [
     # auth
     path("accounts/", include("django.contrib.auth.urls")),
     # api v0
-    path("api/v0/", include("traktor_server.views.api.v0.urls"),),
+    path("api/v0/", include("traktor_server.views.api.v0.urls")),
 ]
 
 if config.url_prefix is None:
