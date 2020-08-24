@@ -9,7 +9,7 @@ from rest_framework.exceptions import (
     ValidationError,
 )
 
-from django_tea import errors as tea_errors
+from tea_django import errors as tea_errors
 
 from traktor import errors
 

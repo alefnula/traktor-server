@@ -1,7 +1,7 @@
 import typer
 from pathlib import Path
 
-from console_tea.commands.config import app as config_app
+from tea_console.commands.config import app as config_app
 
 from traktor_server.config import config
 

@@ -1,4 +1,4 @@
-from django_tea.consts import COLOR_RE
+from tea_django.consts import COLOR_RE
 from rest_framework.exceptions import ValidationError
 
 
