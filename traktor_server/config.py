@@ -8,6 +8,9 @@ class Config(TraktorConfig):
         **TraktorConfig.ENTRIES,
         "server_host": ConfigField(section="server", option="host"),
         "server_port": ConfigField(section="server", option="port", type=int),
+        "server_url_prefix": ConfigField(
+            section="server", option="url_prefix"
+        ),
         "server_workers": ConfigField(
             section="server", option="workers", type=int
         ),
@@ -20,6 +23,7 @@ class Config(TraktorConfig):
 
         self.server_host = "127.0.0.1"
         self.server_port = 8080
+        self.server_url_prefix = None
         self.server_workers = 2
         self.server_socket = "/tmp/traktor.sock"
 
@@ -28,6 +32,13 @@ class Config(TraktorConfig):
     @property
     def server_url(self):
         return f"{self.server_host}:{self.server_port}"
+
+    @property
+    def url_prefix(self):
+        if self.server_url_prefix is None:
+            return ""
+        else:
+            return f"{self.server_url_prefix.strip('/')}/"
 
 
 config = Config()
