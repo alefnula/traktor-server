@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.0.4 (August 24, 2020)
+
+- Updated requirements.
+
+
+---
+
+
 ## v0.0.3 (August 24, 2020)
 
 - Separate traktor-server and traktor configuration. Inherit but keep in
