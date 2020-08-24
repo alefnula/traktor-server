@@ -36,9 +36,9 @@ class Config(TraktorConfig):
     @property
     def url_prefix(self):
         if self.server_url_prefix is None:
-            return ""
+            return None
         else:
-            return f"{self.server_url_prefix.strip('/')}/"
+            return f"{self.server_url_prefix.strip('/')}"
 
 
 config = Config()

@@ -9,12 +9,12 @@ from traktor_server.config import config
 
 urlpatterns = [
     # admin
-    path(f"{config.url_prefix}admin/", admin.site.urls),
+    path("admin/", admin.site.urls),
     # auth
-    path(f"{config.url_prefix}accounts/", include("django.contrib.auth.urls")),
+    path("accounts/", include("django.contrib.auth.urls")),
     # api v0
-    path(
-        f"{config.url_prefix}api/v0/",
-        include("traktor_server.views.api.v0.urls"),
-    ),
+    path("api/v0/", include("traktor_server.views.api.v0.urls"),),
 ] + staticfiles_urlpatterns()
+
+if config.url_prefix is not None:
+    urlpatterns = [path(f"{config.url_prefix}/", include(urlpatterns))]
