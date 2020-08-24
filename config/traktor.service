@@ -11,7 +11,7 @@ User=pi
 Group=pi
 Type=simple
 Restart=on-failure
-PIDFile=/var/run/traktor-server.pid
+PIDFile=/var/run/traktor.pid
 
 
 [Install]

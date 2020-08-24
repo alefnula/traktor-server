@@ -37,10 +37,10 @@ release: build       ## Build and upload the package to PyPI.
 
 deploy:             ## Deploy the application
 	@pip install -U -r requirements.txt
-	@sudo cp config/traktor-server.service /etc/systemd/system/traktor-server.service
-	@sudo systemctl enable traktor-server
-	@sudo systemctl restart traktor-server
+	@sudo cp config/traktor.service /etc/systemd/system/traktor.service
+	@sudo systemctl enable traktor
+	@sudo systemctl restart traktor
 
 
 restart:            ## Restart the system service.
-	@sudo systemctl restart traktor-server
+	@sudo systemctl restart traktor
