@@ -31,6 +31,8 @@ DEBUG = config.debug
 
 ALLOWED_HOSTS = [config.server_host]
 
+URL_PREFIX = "" if config.url_prefix is None else f"/{config.url_prefix}"
+
 
 # Application definition
 
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_simple_bulma",
     "rest_framework",
     "tea_django",
     "traktor",
@@ -138,13 +141,19 @@ LOGGING = log.create_logging_configuration(
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = (
-    "/static/"
-    if config.url_prefix is None
-    else f"/{config.url_prefix}/static/"
-)
-
+STATIC_URL = f"{URL_PREFIX}/static/"
 STATIC_ROOT = BASE_DIR / "static"
+STATICFILES_FINDERS = [
+    # First add the two default Finders, since this will overwrite the default.
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    # Now add our custom SimpleBulma one.
+    "django_simple_bulma.finders.SimpleBulmaFinder",
+]
+
+LOGIN_URL = f"{URL_PREFIX}/accounts/login/"
+LOGIN_REDIRECT_URL = f"{URL_PREFIX}/"
+LOGOUT_REDIRECT_URL = f"{URL_PREFIX}/"
 
 
 # Rest Framework

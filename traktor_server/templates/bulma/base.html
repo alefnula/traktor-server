@@ -1,0 +1,84 @@
+{% load static django_simple_bulma bulma_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock title %}</title>
+  {% block css %}
+    {% bulma %}
+    {% font_awesome %}
+    {% block extra_css %}{% endblock extra_css %}
+  {% endblock css %}
+</head>
+<body>
+
+{% block header %}
+  <div class="container">
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="{% url 'ts.index' %}">
+          <img src="{% static 'images/trex.png' %}" alt="Traktor" height="50" />
+        </a>
+      </div>
+
+      <div id="navMenuExample" class="navbar-menu">
+        <div class="navbar-start">
+          {% block navigation %}
+          {% endblock %}
+        </div>
+      </div>
+
+      <div class="navbar-end">
+        {% if user.is_anonymous %}
+          <a class="navbar-item is-hidden-desktop-only" href="{% url 'login' %}">Login</a>
+        {% else %}
+          <a class="navbar-item is-hidden-desktop-only" href="{% url 'logout' %}">Logout</a>
+        {% endif %}
+      </div>
+    </nav>
+  </div>
+{% endblock header %}
+
+{% block hero %}{% endblock hero %}
+
+<section class="section">
+  <div class="container">
+    {% block messages %}
+      {% if messages %}
+        <div class="messages columns is-desktop">
+          <div class="column is-4 is-offset-4">
+            {% for message in messages %}
+              <div class="message {% if message.tags %}is-{{ message.tags|bulma_message_tag }}{% endif %}">
+                <div class="message-body">{{ message }}</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endblock messages %}
+
+    {% block content_area %}
+      {% block content_title %}{% endblock content_title %}
+      {% block content %}{% endblock content %}
+    {% endblock content_area %}
+  </div>
+</section>
+
+{% block modal %}{% endblock modal %}
+
+{% block footer %}
+  <footer class="footer">
+    <div class="container">
+      <div class="content has-text-centered">
+
+      </div>
+    </div>
+  </footer>
+{% endblock footer %}
+
+{% block javascript %}
+  {% block extra_javascript %}{% endblock extra_javascript %}
+{% endblock javascript %}
+</body>
+</html>
