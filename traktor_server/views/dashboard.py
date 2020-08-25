@@ -32,6 +32,17 @@ def generate_dataset(slug, start_date):
     return project_dataset
 
 
+def sum_datasets(ds):
+    result = []
+    for i, ds in enumerate(ds):
+        for j, value in enumerate(ds["data"]):
+            if i == 0:
+                result.append(value)
+            else:
+                result[j] += value
+    return result
+
+
 @login_required
 def index(request):
     start_date = date.today() - timedelta(days=30)
@@ -51,7 +62,20 @@ def index(request):
         },
         "options": {},
     }
+
+    # Add cumulative daily practice
+    chart["data"]["datasets"].append(
+        {
+            "label": "Cumulative daily practice",
+            "data": sum_datasets(chart["data"]["datasets"]),
+            "backgroundColor": rgb("#CCCCCC"),
+            "borderColor": rgb("#CCCCCC"),
+            "fill": False,
+        }
+    )
+
     cumsum_chart = deepcopy(chart)
+
     cumsum_chart["data"]["datasets"][0]["data"] = list(
         itertools.accumulate(cumsum_chart["data"]["datasets"][0]["data"])
     )
@@ -60,6 +84,9 @@ def index(request):
     )
     cumsum_chart["data"]["datasets"][2]["data"] = list(
         itertools.accumulate(cumsum_chart["data"]["datasets"][2]["data"])
+    )
+    cumsum_chart["data"]["datasets"][3]["data"] = list(
+        itertools.accumulate(cumsum_chart["data"]["datasets"][3]["data"])
     )
 
     return render(
