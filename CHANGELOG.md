@@ -4,6 +4,7 @@
 ## v0.0.5 (August XX, 2020)
 
 - Added dashboard with daily practice and cumulative practice graphs.
+- Update to new version of traktor.
 
 
 ---

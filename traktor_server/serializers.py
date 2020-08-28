@@ -5,7 +5,6 @@ from tea_django.serializers.colored import (
     ColoredUpdateSerializer,
 )
 
-from traktor.engine import engine
 from traktor.models import Project, Task, Entry
 
 
@@ -14,20 +13,21 @@ from traktor.models import Project, Task, Entry
 
 class ProjectSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
 
     def get_id(self, obj):
         return obj.slug
 
+    def get_user(self, obj):
+        return obj.user.username
+
     class Meta:
         model = Project
-        fields = ["id", "name", "color", "created_on", "updated_on"]
+        fields = ["id", "user", "name", "color", "created_on", "updated_on"]
 
 
 class ProjectCreateSerializer(ColoredCreateSerializer):
     name = serializers.CharField(max_length=255)
-
-    def create(self, validated_data):
-        return engine.project_create(**validated_data)
 
 
 class ProjectUpdateSerializer(ColoredUpdateSerializer):
@@ -40,18 +40,23 @@ class ProjectUpdateSerializer(ColoredUpdateSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
     project = serializers.SerializerMethodField()
     id = serializers.SerializerMethodField()
 
-    def get_project(self, obj):
+    def get_user(self, obj) -> str:
+        return obj.project.user.username
+
+    def get_project(self, obj) -> str:
         return obj.project.slug
 
-    def get_id(self, obj):
+    def get_id(self, obj) -> str:
         return obj.slug
 
     class Meta:
         model = Task
         fields = [
+            "user",
             "project",
             "id",
             "name",
@@ -80,12 +85,16 @@ class TaskUpdateSerializer(ColoredUpdateSerializer):
 
 
 class EntrySerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
     project = serializers.SerializerMethodField()
     task = serializers.SerializerMethodField()
     running_time = serializers.SerializerMethodField()
 
+    def get_user(self, obj) -> str:
+        return obj.task.project.user.username
+
     def get_project(self, obj) -> str:
-        return obj.project.slug
+        return obj.task.project.slug
 
     def get_task(self, obj) -> str:
         return obj.task.slug
@@ -96,6 +105,7 @@ class EntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Entry
         fields = [
+            "user",
             "project",
             "task",
             "description",
@@ -113,6 +123,7 @@ class EntrySerializer(serializers.ModelSerializer):
 
 
 class ReportSerializer(serializers.Serializer):
+    user = serializers.CharField()
     project = serializers.CharField()
     task = serializers.CharField()
     duration = serializers.IntegerField()

@@ -7,7 +7,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
 
-from traktor.models import Project
+from traktor.models import User, Project, Entry
 
 
 def rgb(hex):
@@ -17,8 +17,8 @@ def rgb(hex):
 DATE_FMT = "%Y-%m-%d"
 
 
-def generate_dataset(slug, start_date):
-    project = Project.get_by_slug(slug)
+def generate_dataset(user: User, slug: str, start_date: date) -> dict:
+    project = Project.get_by_slug(slug, user=user)
     project_dataset = {
         "label": project.name,
         "data": [0] * 31,
@@ -26,7 +26,9 @@ def generate_dataset(slug, start_date):
         "borderColor": rgb(project.color),
         "fill": False,
     }
-    for entry in project.entry_set.filter(start_time__gte=start_date):
+    for entry in Entry.objects.filter(
+        task__project=project, start_time__gte=start_date
+    ):
         diff = (entry.start_time.date() - start_date).days
         project_dataset["data"][diff] += entry.duration / 60
     return project_dataset
@@ -55,9 +57,9 @@ def index(request):
                 for d in [(start_date + timedelta(days=i)) for i in range(31)]
             ],
             "datasets": [
-                generate_dataset("piano", start_date),
-                generate_dataset("guitar", start_date),
-                generate_dataset("singing", start_date),
+                generate_dataset(request.user, "piano", start_date),
+                generate_dataset(request.user, "guitar", start_date),
+                generate_dataset(request.user, "singing", start_date),
             ],
         },
         "options": {},
