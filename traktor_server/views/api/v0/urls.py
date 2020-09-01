@@ -1,13 +1,10 @@
 from django.urls import path
 
 from traktor_server.views.api.v0 import api
-from traktor_server.views.api.v0 import auth
+from tea_django.urls.auth_jwt import urlpatterns as auth_jwt_urlpatterns
 
 
-urlpatterns = [
-    # Auth
-    path("auth/token/", auth.ObtainToken.as_view()),
-    path("auth/token/refresh/", auth.RefreshToken.as_view()),
+urlpatterns = auth_jwt_urlpatterns + [
     # Project
     path("projects/", api.ProjectListCreate.as_view()),
     path("projects/<slug:project_id>/", api.ProjectGetUpdateDelete.as_view()),
