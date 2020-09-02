@@ -37,7 +37,7 @@ release: build       ## Build and upload the package to PyPI.
 
 deploy:             ## Deploy the application
 	@pip install -U -e .
-	@traktor-server manage collectstatic --no-input
+	@python -m traktor_server manage collectstatic --no-input
 	@sudo cp config/traktor.service /etc/systemd/system/traktor.service
 	@sudo systemctl enable traktor
 	@sudo systemctl restart traktor
