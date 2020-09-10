@@ -2,26 +2,26 @@
 # TYPE traktor_cumulative_duration gauge
 {% spaceless %}
 {% for row in history %}
-traktor_cumulative_duration{user="{{ row.user }}",project="{{ row.project }}",task="{{ row.task }}} {{ row.cumulative_duration }}{% endfor %}
+traktor_cumulative_duration{user="{{ row.user }}",project="{{ row.project }}",task="{{ row.task }}"} {{ row.cumulative_duration }}{% endfor %}
 {% endspaceless %}
 
 # HELP traktor_yearly_duration Total time spent on activity this year
 # TYPE traktor_yearly_duration gauge
 {% spaceless %}
 {% for row in history %}
-traktor_yearly_duration{user="{{ row.user }}",project="{{ row.project }}",task="{{ row.task }}} {{ row.yearly_duration }}{% endfor %}
+traktor_yearly_duration{user="{{ row.user }}",project="{{ row.project }}",task="{{ row.task }}"} {{ row.yearly_duration }}{% endfor %}
 {% endspaceless %}
 
 # HELP traktor_monthly_duration Total time spent on activity this month
 # TYPE traktor_monthly_duration gauge
 {% spaceless %}
 {% for row in history %}
-traktor_monthly_duration{user="{{ row.user }}",project="{{ row.project }}",task="{{ row.task }}} {{ row.monthly_duration }}{% endfor %}
+traktor_monthly_duration{user="{{ row.user }}",project="{{ row.project }}",task="{{ row.task }}"} {{ row.monthly_duration }}{% endfor %}
 {% endspaceless %}
 
 # HELP traktor_weekly_duration Total time spent on activity this week
 # TYPE traktor_weekly_duration gauge
 {% spaceless %}
 {% for row in history %}
-traktor_weekly_duration{user="{{ row.user }}",project="{{ row.project }}",task="{{ row.task }}} {{ row.weekly_duration }}{% endfor %}
+traktor_weekly_duration{user="{{ row.user }}",project="{{ row.project }}",task="{{ row.task }}"} {{ row.weekly_duration }}{% endfor %}
 {% endspaceless %}
