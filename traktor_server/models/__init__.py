@@ -1,3 +1,3 @@
-__all__ = ["History"]
+__all__ = ["Balance"]
 
-from traktor_server.models.history import History
+from traktor_server.models.balance import Balance

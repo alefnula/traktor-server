@@ -1,11 +1,11 @@
 from django.contrib import admin
 
 from traktor.admin import name
-from traktor_server.models import History
+from traktor_server.models import Balance
 
 
-@admin.register(History)
-class HistoryAdmin(admin.ModelAdmin):
+@admin.register(Balance)
+class BalanceAdmin(admin.ModelAdmin):
     list_display = (
         "timestamp",
         "user",

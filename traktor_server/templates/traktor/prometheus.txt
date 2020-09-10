@@ -1,27 +1,27 @@
 # HELP traktor_cumulative_duration Total time spent on activity
 # TYPE traktor_cumulative_duration gauge
 {% spaceless %}
-{% for row in history %}
-traktor_cumulative_duration{user="{{ row.user }}",project="{{ row.project }}",task="{{ row.task }}"} {{ row.cumulative_duration }}{% endfor %}
+{% for balance in balances %}
+traktor_cumulative_duration{user="{{ balance.task.project.user.username }}",project="{{ balance.task.project.name }}",task="{{ balance.task.name }}"} {{ balance.cumulative_duration }}{% endfor %}
 {% endspaceless %}
 
 # HELP traktor_yearly_duration Total time spent on activity this year
 # TYPE traktor_yearly_duration gauge
 {% spaceless %}
-{% for row in history %}
-traktor_yearly_duration{user="{{ row.user }}",project="{{ row.project }}",task="{{ row.task }}"} {{ row.yearly_duration }}{% endfor %}
+{% for balance in balances %}
+traktor_yearly_duration{user="{{ balance.task.project.user.username }}",project="{{ balance.task.project.name }}",task="{{ balance.task.name }}"} {{ balance.yearly_duration }}{% endfor %}
 {% endspaceless %}
 
 # HELP traktor_monthly_duration Total time spent on activity this month
 # TYPE traktor_monthly_duration gauge
 {% spaceless %}
-{% for row in history %}
-traktor_monthly_duration{user="{{ row.user }}",project="{{ row.project }}",task="{{ row.task }}"} {{ row.monthly_duration }}{% endfor %}
+{% for balance in balances %}
+traktor_monthly_duration{user="{{ balance.task.project.user.username }}",project="{{ balance.task.project.name }}",task="{{ balance.task.name }}"} {{ balance.monthly_duration }}{% endfor %}
 {% endspaceless %}
 
 # HELP traktor_weekly_duration Total time spent on activity this week
 # TYPE traktor_weekly_duration gauge
 {% spaceless %}
-{% for row in history %}
-traktor_weekly_duration{user="{{ row.user }}",project="{{ row.project }}",task="{{ row.task }}"} {{ row.weekly_duration }}{% endfor %}
+{% for balance in balances %}
+traktor_weekly_duration{user="{{ balance.task.project.user.username }}",project="{{ balance.task.project.name }}",task="{{ balance.task.name }}"} {{ balance.weekly_duration }}{% endfor %}
 {% endspaceless %}

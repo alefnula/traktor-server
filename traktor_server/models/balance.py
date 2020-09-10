@@ -14,13 +14,17 @@ config = TeaConsoleConfig.get_application_config()
 
 class HistoryManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().select_related("task", "task__project")
+        return (
+            super()
+            .get_queryset()
+            .select_related("task", "task__project", "task__project__user")
+        )
 
 
-class History(models.Model):
+class Balance(models.Model):
     timestamp = models.DateTimeField(null=False, blank=False)
-    task = models.ForeignKey(
-        Task, null=False, blank=False, on_delete=models.CASCADE
+    task = models.OneToOneField(
+        Task, null=False, blank=False, on_delete=models.CASCADE, unique=True
     )
     cumulative_duration = models.BigIntegerField(
         default=0, null=False, blank=False
@@ -33,7 +37,6 @@ class History(models.Model):
 
     class Meta:
         app_label = "traktor_server"
-        ordering = ["-timestamp"]
 
     @property
     def cumulative_time(self) -> str:
@@ -54,6 +57,7 @@ class History(models.Model):
     @classmethod
     def create(cls, task: Task):
         this_ts = ts.now()
+
         start_of_year = ts.make_aware(
             datetime(this_ts.year, 1, 1), config.timezone
         )
@@ -62,32 +66,23 @@ class History(models.Model):
         )
         start_of_week = this_ts - timedelta(days=this_ts.weekday())
 
-        last = cls.objects.filter(task=task).order_by("-timestamp").first()
-        if last is None:
+        balance = cls.objects.filter(task=task).first()
+        if balance is None:
             last_ts = ts.make_aware(datetime(2000, 1, 1), config.timezone)
-            cumulative_duration = 0
-            yearly_duration = 0
-            monthly_duration = 0
-            weekly_duration = 0
+            balance = cls.objects.create(timestamp=this_ts, task=task)
         else:
-            last_ts = last.timestamp
-            cumulative_duration = last.cumulative_duration
-            if last_ts.year == this_ts.year:
-                yearly_duration = last.yearly_duration
-            else:
-                yearly_duration = 0
+            last_ts = balance.timestamp
+            balance.timestamp = this_ts
+            if last_ts.year != this_ts.year:
+                balance.yearly_duration = 0
 
-            if last_ts.year == this_ts.year and last_ts.month == this_ts.month:
-                monthly_duration = last.monthly_duration
-            else:
-                monthly_duration = 0
+            if last_ts.year != this_ts.year or last_ts.month != this_ts.month:
+                balance.monthly_duration = 0
 
-            if (this_ts - last_ts).days < 7 and (
-                last_ts.weekday() <= this_ts.weekday()
+            if (this_ts - last_ts).days >= 7 or (
+                last_ts.weekday() > this_ts.weekday()
             ):
-                weekly_duration = last.weekly_duration
-            else:
-                weekly_duration = 0
+                balance.weekly_duration = 0
 
         entries = Entry.objects.filter(
             Q(task=task) & (Q(end_time__isnull=True) | Q(end_time__gt=last_ts))
@@ -96,42 +91,46 @@ class History(models.Model):
             # Cumulative
             start = max(last_ts, entry.start_time)
             if entry.end_time is None:
-                cumulative_duration += (this_ts - start).total_seconds()
+                balance.cumulative_duration += (
+                    this_ts - start
+                ).total_seconds()
             else:
-                cumulative_duration += (entry.end_time - start).total_seconds()
+                balance.cumulative_duration += (
+                    entry.end_time - start
+                ).total_seconds()
 
             # Yearly
             start = max(last_ts, entry.start_time, start_of_year)
             if entry.end_time is None:
-                yearly_duration += (this_ts - start).total_seconds()
+                balance.yearly_duration += (this_ts - start).total_seconds()
             else:
                 if entry.end_time < start_of_year:
                     continue
-                yearly_duration += (entry.end_time - start).total_seconds()
+                balance.yearly_duration += (
+                    entry.end_time - start
+                ).total_seconds()
 
             # Monthly
             start = max(last_ts, entry.start_time, start_of_month)
             if entry.end_time is None:
-                monthly_duration += (this_ts - start).total_seconds()
+                balance.monthly_duration += (this_ts - start).total_seconds()
             else:
                 if entry.end_time < start_of_month:
                     continue
-                monthly_duration += (entry.end_time - start).total_seconds()
+                balance.monthly_duration += (
+                    entry.end_time - start
+                ).total_seconds()
 
             # Weekly
             start = max(last_ts, entry.start_time, start_of_week)
             if entry.end_time is None:
-                weekly_duration += (this_ts - start).total_seconds()
+                balance.weekly_duration += (this_ts - start).total_seconds()
             else:
                 if entry.end_time < start_of_week:
                     continue
-                weekly_duration += (entry.end_time - start).total_seconds()
+                balance.weekly_duration += (
+                    entry.end_time - start
+                ).total_seconds()
 
-        return cls.objects.create(
-            timestamp=this_ts,
-            task=task,
-            cumulative_duration=int(cumulative_duration),
-            yearly_duration=int(yearly_duration),
-            monthly_duration=int(monthly_duration),
-            weekly_duration=int(weekly_duration),
-        )
+        balance.save()
+        return balance
