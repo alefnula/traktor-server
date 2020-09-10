@@ -84,7 +84,8 @@ def shell():
         from IPython import embed
         from traktor.config import config
         from traktor.engine import engine
-        from traktor.models import Project, Task, Entry
+        from traktor.models import Project, Task, Entry, Report
+        from traktor_server.models import History
 
         embed(
             user_ns={
@@ -93,6 +94,8 @@ def shell():
                 "Project": Project,
                 "Task": Task,
                 "Entry": Entry,
+                "Report": Report,
+                "History": History,
             },
             colors="neutral",
         )
