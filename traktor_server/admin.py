@@ -8,13 +8,13 @@ from traktor_server.models import History
 class HistoryAdmin(admin.ModelAdmin):
     list_display = (
         "timestamp",
+        "user",
         "project_name",
         "task_name",
-        "user",
-        "cumulative_duration",
-        "yearly_duration",
-        "monthly_duration",
-        "weekly_duration",
+        "cumulative_time",
+        "yearly_time",
+        "monthly_time",
+        "weekly_time",
     )
     list_filter = ["task__project__user__username"]
     ordering = ["-timestamp"]
@@ -25,10 +25,12 @@ class HistoryAdmin(admin.ModelAdmin):
     ]
     readonly_fields = (
         "timestamp",
-        "cumulative_duration",
-        "yearly_duration",
-        "monthly_duration",
-        "weekly_duration",
+        "user",
+        "project_name",
+        "cumulative_time",
+        "yearly_time",
+        "monthly_time",
+        "weekly_time",
     )
     fieldsets = (
         (None, {"fields": ("timestamp", "user", "project_name", "task")}),
@@ -36,10 +38,10 @@ class HistoryAdmin(admin.ModelAdmin):
             "Durations",
             {
                 "fields": (
-                    "cumulative_duration",
-                    "yearly_duration",
-                    "monthly_duration",
-                    "weekly_duration",
+                    "cumulative_time",
+                    "yearly_time",
+                    "monthly_time",
+                    "weekly_time",
                 )
             },
         ),
