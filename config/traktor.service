@@ -5,7 +5,7 @@ Wants=network.target
 After=network.target
 
 [Service]
-ExecStart=/home/pi/projects/envs/traktor-server/bin/traktor-server gunicorn
+ExecStart=/home/pi/projects/envs/traktor-server/bin/python -m traktor_server gunicorn
 WorkingDirectory=/home/pi/projects/traktor-server
 User=pi
 Group=pi

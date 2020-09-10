@@ -5,7 +5,7 @@ Wants=network.target
 After=network.target
 
 [Service]
-ExecStart=/home/pi/projects/envs/traktor-server/bin/traktor-server manage run_huey
+ExecStart=/home/pi/projects/envs/traktor-server/bin/python -m traktor_server manage run_huey
 WorkingDirectory=/home/pi/projects/traktor-server
 User=pi
 Group=pi

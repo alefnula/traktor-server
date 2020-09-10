@@ -7,6 +7,7 @@ from traktor_server.models import History
 @admin.register(History)
 class HistoryAdmin(admin.ModelAdmin):
     list_display = (
+        "timestamp",
         "project_name",
         "task_name",
         "user",
@@ -30,7 +31,7 @@ class HistoryAdmin(admin.ModelAdmin):
         "weekly_duration",
     )
     fieldsets = (
-        (None, {"fields": ("user", "project_name", "task",)},),
+        (None, {"fields": ("timestamp", "user", "project_name", "task")}),
         (
             "Durations",
             {

@@ -36,7 +36,7 @@ release: build       ## Build and upload the package to PyPI.
 
 
 deploy:             ## Deploy the application
-	@pip install -U -e .
+	@pip install -U -r requirements-dev.txt
 	@python -m traktor_server manage collectstatic --no-input
 	# Install Traktor systemd
 	@sudo cp config/traktor.service /etc/systemd/system/traktor.service
