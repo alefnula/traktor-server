@@ -32,7 +32,7 @@ SECRET_KEY = config.secret_key
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config.debug
 
-ALLOWED_HOSTS = [config.server_host]
+ALLOWED_HOSTS = ["127.0.0.1", config.server_host]
 
 URL_PREFIX = "" if config.url_prefix is None else f"/{config.url_prefix}"
 
