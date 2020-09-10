@@ -10,8 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 from datetime import timedelta
+
+from redis import ConnectionPool
 
 from traktor_server import log
 from traktor_server.config import config
@@ -43,6 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "huey.contrib.djhuey",
     "django_simple_bulma",
     "rest_framework",
     "tea_django",
@@ -184,4 +188,21 @@ SIMPLE_JWT = {
     "SIGNING_KEY": SECRET_KEY,
     "VERIFYING_KEY": True,
     "AUTH_HEADER_TYPES": ("JWT",),
+}
+
+
+HUEY = {
+    "name": "my-app",
+    "connection": {
+        "connection_pool": ConnectionPool.from_url(
+            config.redis_url, max_connections=10
+        )
+    },
+    "consumer": {
+        "workers": 2,
+        "worker_type": "process",
+        "logfile": os.path.join(config.log_dir, "huey.log"),
+    },
+    "immediate": False,
+    #
 }

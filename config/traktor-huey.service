@@ -1,0 +1,18 @@
+[Unit]
+Description=Traktor Huey
+
+Wants=network.target
+After=network.target
+
+[Service]
+ExecStart=/home/pi/projects/envs/traktor-server/bin/traktor-server manage run_huey
+WorkingDirectory=/home/pi/projects/traktor-server
+User=pi
+Group=pi
+Type=simple
+Restart=on-failure
+PIDFile=/var/run/traktor-huey.pid
+
+
+[Install]
+WantedBy=multi-user.target

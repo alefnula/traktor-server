@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+    traktor-redis:
+        container_name: traktor-redis
+        restart: always
+        image: redis:6-alpine
+        ports:
+            - "6379:6379"
