@@ -192,7 +192,7 @@ SIMPLE_JWT = {
 
 
 HUEY = {
-    "name": "my-app",
+    "name": "traktor_server",
     "connection": {
         "connection_pool": ConnectionPool.from_url(
             config.redis_url, max_connections=10
