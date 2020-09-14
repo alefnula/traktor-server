@@ -64,7 +64,9 @@ class Balance(models.Model):
         start_of_month = ts.make_aware(
             datetime(this_ts.year, this_ts.month, 1), config.timezone
         )
-        start_of_week = this_ts - timedelta(days=this_ts.weekday())
+        start_of_week = this_ts - timedelta(days=this_ts.weekday()).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
 
         balance = cls.objects.filter(task=task).first()
         if balance is None:
