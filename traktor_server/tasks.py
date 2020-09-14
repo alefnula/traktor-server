@@ -10,10 +10,10 @@ from traktor_server.models import Balance
 logger = logging.getLogger(__name__)
 
 
-def create():
+def create(recalculate: bool = False):
     try:
         for task in Task.objects.all():
-            Balance.create(task)
+            Balance.create(task=task, recalculate=recalculate)
     except Exception:
         logger.exception("Creating balances failed!")
 
@@ -26,3 +26,13 @@ def create_balance():
 @db_periodic_task(crontab("*/15"))
 def create_balance_periodic():
     create()
+
+
+@db_task()
+def recreate_balance():
+    create(recalculate=True)
+
+
+@db_periodic_task(crontab(1, 0))
+def recreate_balance_periodic():
+    create(recalculate=True)

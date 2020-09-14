@@ -54,10 +54,24 @@ class Balance(models.Model):
     def weekly_time(self) -> str:
         return ts.humanize(self.weekly_duration)
 
-    @classmethod
-    def create(cls, task: Task):
-        this_ts = ts.now()
+    @staticmethod
+    def __get_duration(
+        entry: Entry, this_ts: datetime, start_time: datetime
+    ) -> int:
+        start_time = max(entry.start_time, start_time)
 
+        if entry.end_time is None:
+            return int((this_ts - start_time).total_seconds())
+        else:
+            return int((entry.end_time - start_time).total_seconds())
+
+    @staticmethod
+    def __bot():
+        return ts.make_aware(datetime(2000, 1, 1), config.timezone)
+
+    @classmethod
+    def create(cls, task: Task, recalculate: bool = False):
+        this_ts = ts.now()
         start_of_year = ts.make_aware(
             datetime(this_ts.year, 1, 1), config.timezone
         )
@@ -68,71 +82,74 @@ class Balance(models.Model):
             hour=0, minute=0, second=0, microsecond=0
         )
 
-        balance = cls.objects.filter(task=task).first()
-        if balance is None:
-            last_ts = ts.make_aware(datetime(2000, 1, 1), config.timezone)
-            balance = cls.objects.create(timestamp=this_ts, task=task)
-        else:
-            last_ts = balance.timestamp
-            balance.timestamp = this_ts
-            if last_ts.year != this_ts.year:
+        if recalculate:
+            try:
+                balance = cls.objects.get(task=task)
+                balance.timestamp = this_ts
+                balance.cumulative_duration = 0
                 balance.yearly_duration = 0
-
-            if last_ts.year != this_ts.year or last_ts.month != this_ts.month:
                 balance.monthly_duration = 0
-
-            if (this_ts - last_ts).days >= 7 or (
-                last_ts.weekday() > this_ts.weekday()
-            ):
                 balance.weekly_duration = 0
+            except cls.DoesNotExists:
+                balance = cls.objects.create(timestamp=this_ts, task=task)
+            last_ts = cls.__bot()
+            entries = Entry.objects.filter(task=task)
+        else:
+            try:
+                balance = cls.objects.get(task=task)
+                last_ts = balance.timestamp
+                balance.timestamp = this_ts
+                if last_ts.year != this_ts.year:
+                    balance.yearly_duration = 0
 
-        entries = Entry.objects.filter(
-            Q(task=task) & (Q(end_time__isnull=True) | Q(end_time__gt=last_ts))
-        )
+                if (
+                    last_ts.year != this_ts.year
+                    or last_ts.month != this_ts.month
+                ):
+                    balance.monthly_duration = 0
+
+                if (this_ts - last_ts).days >= 7 or (
+                    last_ts.weekday() > this_ts.weekday()
+                ):
+                    balance.weekly_duration = 0
+            except cls.DoesNotExists:
+                last_ts = cls.__bot()
+                balance = cls.objects.create(timestamp=this_ts, task=task)
+
+            entries = Entry.objects.filter(
+                Q(task=task)
+                & (Q(end_time__isnull=True) | Q(end_time__gt=last_ts))
+            )
+
         for entry in entries:
             # Cumulative
-            start = max(last_ts, entry.start_time)
-            if entry.end_time is None:
-                balance.cumulative_duration += (
-                    this_ts - start
-                ).total_seconds()
-            else:
-                balance.cumulative_duration += (
-                    entry.end_time - start
-                ).total_seconds()
+            balance.cumulative_duration += cls.__get_duration(
+                entry=entry, this_ts=this_ts, start_time=last_ts
+            )
 
             # Yearly
-            start = max(last_ts, entry.start_time, start_of_year)
-            if entry.end_time is None:
-                balance.yearly_duration += (this_ts - start).total_seconds()
-            else:
-                if entry.end_time < start_of_year:
-                    continue
-                balance.yearly_duration += (
-                    entry.end_time - start
-                ).total_seconds()
+            if entry.end_time is None or entry.end_time >= start_of_year:
+                balance.yearly_duration += cls.__get_duration(
+                    entry=entry,
+                    this_ts=this_ts,
+                    start_time=max(last_ts, start_of_year),
+                )
 
             # Monthly
-            start = max(last_ts, entry.start_time, start_of_month)
-            if entry.end_time is None:
-                balance.monthly_duration += (this_ts - start).total_seconds()
-            else:
-                if entry.end_time < start_of_month:
-                    continue
-                balance.monthly_duration += (
-                    entry.end_time - start
-                ).total_seconds()
+            if entry.end_time is None or entry.end_time >= start_of_month:
+                balance.monthly_duration += cls.__get_duration(
+                    entry=entry,
+                    this_ts=this_ts,
+                    start_time=max(last_ts, start_of_month),
+                )
 
             # Weekly
-            start = max(last_ts, entry.start_time, start_of_week)
-            if entry.end_time is None:
-                balance.weekly_duration += (this_ts - start).total_seconds()
-            else:
-                if entry.end_time < start_of_week:
-                    continue
-                balance.weekly_duration += (
-                    entry.end_time - start
-                ).total_seconds()
+            if entry.end_time is None or entry.end_time >= start_of_week:
+                balance.weekly_duration += cls.__get_duration(
+                    entry=entry,
+                    this_ts=this_ts,
+                    start_time=max(last_ts, start_of_week),
+                )
 
         balance.save()
         return balance
