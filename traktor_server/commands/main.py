@@ -4,6 +4,7 @@ from pathlib import Path
 from tea_console.commands.config import app as config_app
 
 from traktor_server.config import config
+from traktor_server.commands.db import app as db_app
 
 
 app = typer.Typer(name="traktor-server", help="Traktor server.")
@@ -11,6 +12,7 @@ app = typer.Typer(name="traktor-server", help="Traktor server.")
 
 # Add tea subcommands
 app.add_typer(config_app)
+app.add_typer(db_app)
 
 
 @app.callback()
