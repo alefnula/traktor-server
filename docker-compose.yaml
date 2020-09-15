@@ -7,3 +7,13 @@ services:
         image: redis:6-alpine
         ports:
             - "6379:6379"
+    traktor-postgres:
+        container_name: traktor-postgres
+        restart: always
+        image: postgres:11
+        environment:
+            - POSTGRES_USER=traktor
+            - POSTGRES_PASSWORD=traktor
+            - POSTGRES_DB=traktor
+        ports:
+            - "5432:5432"
