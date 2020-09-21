@@ -90,7 +90,7 @@ class Balance(models.Model):
                 balance.yearly_duration = 0
                 balance.monthly_duration = 0
                 balance.weekly_duration = 0
-            except cls.DoesNotExists:
+            except cls.DoesNotExist:
                 balance = cls.objects.create(timestamp=this_ts, task=task)
             last_ts = cls.__bot()
             entries = Entry.objects.filter(task=task)
@@ -112,7 +112,7 @@ class Balance(models.Model):
                     last_ts.weekday() > this_ts.weekday()
                 ):
                     balance.weekly_duration = 0
-            except cls.DoesNotExists:
+            except cls.DoesNotExist:
                 last_ts = cls.__bot()
                 balance = cls.objects.create(timestamp=this_ts, task=task)
 
