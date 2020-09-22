@@ -15,6 +15,7 @@ class BalanceAdmin(admin.ModelAdmin):
         "yearly_time",
         "monthly_time",
         "weekly_time",
+        "daily_time",
     )
     list_filter = ["task__project__user__username"]
     ordering = ["-timestamp"]
@@ -31,6 +32,7 @@ class BalanceAdmin(admin.ModelAdmin):
         "yearly_time",
         "monthly_time",
         "weekly_time",
+        "daily_time",
     )
     fieldsets = (
         (None, {"fields": ("timestamp", "user", "project_name", "task")}),
@@ -42,6 +44,7 @@ class BalanceAdmin(admin.ModelAdmin):
                     "yearly_time",
                     "monthly_time",
                     "weekly_time",
+                    "daily_time",
                 )
             },
         ),
