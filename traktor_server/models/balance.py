@@ -31,7 +31,8 @@ class Balance(models.Model):
     )
     yearly_duration = models.IntegerField(default=0, null=False, blank=False)
     monthly_duration = models.IntegerField(default=0, null=False, blank=False)
-    weekly_duration = models.IntegerField(default=0, null=True, blank=True)
+    weekly_duration = models.IntegerField(default=0, null=False, blank=False)
+    daily_duration = models.IntegerField(default=0, null=False, blank=False)
 
     objects = HistoryManager()
 
@@ -53,6 +54,10 @@ class Balance(models.Model):
     @property
     def weekly_time(self) -> str:
         return ts.humanize(self.weekly_duration)
+
+    @property
+    def daily_time(self) -> str:
+        return ts.humanize(self.daily_duration)
 
     @staticmethod
     def __get_duration(
@@ -81,6 +86,9 @@ class Balance(models.Model):
         start_of_week = (this_ts - timedelta(days=this_ts.weekday())).replace(
             hour=0, minute=0, second=0, microsecond=0
         )
+        start_of_day = this_ts.replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
 
         if recalculate:
             try:
@@ -90,6 +98,7 @@ class Balance(models.Model):
                 balance.yearly_duration = 0
                 balance.monthly_duration = 0
                 balance.weekly_duration = 0
+                balance.daily_duration = 0
             except cls.DoesNotExist:
                 balance = cls.objects.create(timestamp=this_ts, task=task)
             last_ts = cls.__bot()
@@ -99,19 +108,31 @@ class Balance(models.Model):
                 balance = cls.objects.get(task=task)
                 last_ts = balance.timestamp
                 balance.timestamp = this_ts
+
+                # Reset year
                 if last_ts.year != this_ts.year:
                     balance.yearly_duration = 0
 
+                # Reset month
                 if (
                     last_ts.year != this_ts.year
                     or last_ts.month != this_ts.month
                 ):
                     balance.monthly_duration = 0
 
+                # Reset week
                 if (this_ts - last_ts).days >= 7 or (
                     last_ts.weekday() > this_ts.weekday()
                 ):
                     balance.weekly_duration = 0
+
+                # Reset day
+                if (
+                    last_ts.year != this_ts.year
+                    or last_ts.month != this_ts.month
+                    or last_ts.day != this_ts.day
+                ):
+                    balance.daily_duration = 0
             except cls.DoesNotExist:
                 last_ts = cls.__bot()
                 balance = cls.objects.create(timestamp=this_ts, task=task)
@@ -151,5 +172,12 @@ class Balance(models.Model):
                     start_time=max(last_ts, start_of_week),
                 )
 
+            # Daily
+            if entry.end_time is None or entry.end_time >= start_of_day:
+                balance.daily_duration += cls.__get_duration(
+                    entry=entry,
+                    this_ts=this_ts,
+                    start_time=max(last_ts, start_of_day),
+                )
         balance.save()
         return balance
